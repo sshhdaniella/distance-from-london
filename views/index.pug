@@ -1,0 +1,17 @@
+extends layout
+
+block content
+    h1= title
+    p Welcome to #{title}
+    form(id="login" action="/users/London" method="get")
+        label(for="miles")
+        input(type="text" id="miles" name="miles" placeholder="distance in miles")
+        input(type="submit" value="get")
+    
+    if users
+        section.users
+            p london friends
+            ul
+                each user in users
+                    li(id='user-id-' + user.id)
+                        p #{user.first_name} #{user.last_name}, #{user.email}
