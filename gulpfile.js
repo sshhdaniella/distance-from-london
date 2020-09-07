@@ -18,7 +18,7 @@ gulp.task('server', (cb) => {
 });
 
 gulp.task('styles', (cb) => {
-    return gulp.src('sass/**/*.scss')
+    return gulp.src('sass/main.scss')
         .pipe(sass().on('error', sass.logError))
         .pipe(gulp.dest('./public/css')), cb();
 });

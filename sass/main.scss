@@ -1,9 +1,12 @@
+@import './reset';
 @import './variables/colors';
 @import './mixins/utilities';
 
 body {
     background: $white;
     color: $black_100;
+    font-size: 16px;
+    line-height: 16px;
 }
 
 h1 {
@@ -88,6 +91,10 @@ table {
 
 form {
     margin-bottom: 30px;
+    input {
+        font-size: 14px;
+        line-height: 14px;
+    }
     input[type="number"] {
         @include pad();
         display: block;
