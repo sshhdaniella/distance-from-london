@@ -1,0 +1,17 @@
+$default-padding: 10px;
+
+@mixin pad($n: $default-padding) {
+    padding: $n;
+}
+
+@mixin button() {
+    width: 120px;
+    height: 40px;
+    border: 2px solid;
+    background-color: $racer_green;
+    color: $white;
+    font-size: 16px;
+    letter-spacing: 1px;
+    line-height: 16px;
+    cursor: pointer;
+}

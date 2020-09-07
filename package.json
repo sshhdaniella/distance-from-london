@@ -4,17 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon -e js,pug start.js",
+    "start": "gulp",
     "test": "jest --coverage --config ./jest.config.json"
   },
   "dependencies": {
     "express": "^4.17.1",
     "geolib": "^3.3.1",
+    "gulp-nodemon": "^2.5.0",
     "node-fetch": "^2.6.1",
     "nodemon": "^2.0.4",
     "pug": "^3.0.0"
   },
   "devDependencies": {
+    "del": "^5.1.0",
+    "gulp": "^4.0.2",
+    "gulp-sass": "^4.1.0",
     "jest": "^26.4.2",
     "supertest": "^4.0.2"
   },
