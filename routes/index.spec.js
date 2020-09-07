@@ -1,6 +1,9 @@
+const app = require('../app');
+const supertest = require('supertest');
+const request = supertest(app);
+
 const milesToMeters = require("./getMeters");
 const getData = require("./getData");
-
 const mockKeys = ['id', 'first_name', 'last_name', 'email', 'ip_address', 'latitude', 'longitude' ];
 
 describe('Miles to meters function tests', () => {
@@ -21,16 +24,32 @@ describe('Get data from endpoint tests', () => {
         const data = await getData('https://dwp-techtest.herokuapp.com/city/Newcastle/users');
         expect(data).toStrictEqual([]);
     });
-    // test('getData throws error on empty string', async () => {
-    //     const data = await getData();
-    //     expect(data).toThrow('Only absolute URLs are supported');
-    // });
 });
 
-describe('Route tests', () => {
-    // it('works with async/await', async () => {
-    //     expect.assertions(1);
-    //     const data = await user.getUserName(4);
-    //     expect(data).toEqual('Mark');
-    // });
+describe('Route Tests', () => {
+    test('Gets the index route', async done => {
+        const res = await request.get('/')
+        expect(res.status).toEqual(200);
+        done();
+    });
+    test('Gets the /users/:city route with query of 20 miles', async done => {
+        const res = await request.get('/users/London?miles=20');
+        expect(res.status).toEqual(200);
+        done();
+    });
+    test('Expect error to be shown if no miles are provided', async done => {
+        const res = await request.get('/users/London');
+        expect(res.text).toContain('You must provide distance in miles');
+        done();
+    });
+    test('Expect error to be shown if miles are provided as negative numbers', async done => {
+        const res = await request.get('/users/London?miles=-20');
+        expect(res.text).toContain('You must enter a positive number');
+        done();
+    });
+    test('Expect error to be shown if miles as string', async done => {
+        const res = await request.get('/users/London?miles="hello"');
+        expect(res.text).toContain('You must enter a number');
+        done();
+    });
 });

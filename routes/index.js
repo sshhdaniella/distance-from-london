@@ -1,16 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-//allow calculation of lat / lng
-const geolib = require('geolib');
-const milesToMeters = require('./getMeters');
 const getData = require('./getData');
-
-//london lat lng
-const LondonCoOrds = Object.freeze({
-    latitude: 51.5074,
-    longitude: -0.1278
-});
+const getRadiusDistance = require('./getRadiusDistance');
 
 router.get('/', (req, res) => {
     res.status(200);
@@ -19,30 +11,27 @@ router.get('/', (req, res) => {
 
 router.get('/users/:city', async (req, res) => {
     const { city } = req.params;
-    const { london_users, miles } = req.query;
+    const { miles } = req.query;
 
     if(!miles){
-        res.render('index', {title: 'Find London Users', errors: 'You must provide distance in miles', london_users})
+        res.render('index', {title: 'Find London Users', errors: 'You must provide distance in miles'});
         return;
     }
     
     if(Math.sign(miles) === -1) {
-        res.render('index', {title: 'Find London Users', errors: 'You must enter a positive number', london_users})
+        res.render('index', {title: 'Find London Users', errors: 'You must enter a positive number'})
+        return;
+    }
+
+    if(!Math.abs(miles)) {
+        res.render('index', {title: 'Find London Users', errors: 'You must enter a number'})
         return;
     }
 
     const allUsers = await getData('https://dwp-techtest.herokuapp.com/users');
     const usersInLondon = await getData(`https://dwp-techtest.herokuapp.com/city/${city}/users`);
     
-    let usersInRadius = [];
-    if(miles){
-        const radiusDistance = milesToMeters(miles);
-        allUsers.forEach(user => {
-            if(geolib.isPointWithinRadius({ latitude: user.latitude, longitude: user.longitude }, LondonCoOrds, radiusDistance)){
-                usersInRadius.push({...user});
-            }
-        });
-    }
+    const usersInRadius = allUsers.length > 0 && miles ? getRadiusDistance(allUsers, miles) : [];
 
     const combinedUsers = [...usersInLondon, ...usersInRadius];
     res.status(200);
