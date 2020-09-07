@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon -e js,html,pug app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --coverage --config ./jest.config.json"
   },
   "dependencies": {
     "express": "^4.17.1",
@@ -13,5 +13,8 @@
     "node-fetch": "^2.6.1",
     "nodemon": "^2.0.4",
     "pug": "^3.0.0"
+  },
+  "devDependencies": {
+    "jest": "^26.4.2"
   }
 }

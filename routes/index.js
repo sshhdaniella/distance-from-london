@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const fetch = require('node-fetch');
 
 //allow calculation of lat / lng
 const geolib = require('geolib');
+const milesToMeters = require('./getMeters');
+const getData = require('./getData');
 
 //london lat lng
 const LondonCoOrds = Object.freeze({
@@ -11,33 +12,23 @@ const LondonCoOrds = Object.freeze({
     longitude: -0.1278
 });
 
-//function to get data
-const getData = async url => {
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.log(error);
-    }
-};
-
-//endpoints
-// https://dwp-techtest.herokuapp.com/instructions
-// https://dwp-techtest.herokuapp.com/city/{city}/users == London
-// https://dwp-techtest.herokuapp.com/user/{id}
-// https://dwp-techtest.herokuapp.com/users
-
 router.get('/', (req, res) => {
-    res.render('index', { title: 'Distance from London' });
+    res.status(200);
+    res.render('index', { title: 'Find London Users' });
 });
 
 router.get('/users/:city', async (req, res) => {
     const { city } = req.params;
-    const { miles } = req.query;
+    const { london_users, miles } = req.query;
 
-    const mileToM = (m) => {
-        return (m * 1.60934) * 1000;
+    if(!miles){
+        res.render('index', {title: 'Find London Users', errors: 'You must provide distance in miles', london_users})
+        return;
+    }
+    
+    if(Math.sign(miles) === -1) {
+        res.render('index', {title: 'Find London Users', errors: 'You must enter a positive number', london_users})
+        return;
     }
 
     const allUsers = await getData('https://dwp-techtest.herokuapp.com/users');
@@ -45,7 +36,7 @@ router.get('/users/:city', async (req, res) => {
     
     let usersInRadius = [];
     if(miles){
-        const radiusDistance = mileToM(miles);
+        const radiusDistance = milesToMeters(miles);
         allUsers.forEach(user => {
             if(geolib.isPointWithinRadius({ latitude: user.latitude, longitude: user.longitude }, LondonCoOrds, radiusDistance)){
                 usersInRadius.push({...user});
@@ -54,7 +45,8 @@ router.get('/users/:city', async (req, res) => {
     }
 
     const combinedUsers = [...usersInLondon, ...usersInRadius];
-    res.render('index', {title: 'Users in London', users: combinedUsers});
+    res.status(200);
+    res.render('index', {title: 'London Users Results', users: combinedUsers, miles});
 });
 
 module.exports = router;

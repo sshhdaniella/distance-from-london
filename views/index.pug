@@ -1,17 +1,29 @@
 extends layout
 
 block content
-    h1= title
-    p Welcome to #{title}
-    form(id="login" action="/users/London" method="get")
-        label(for="miles")
-        input(type="text" id="miles" name="miles" placeholder="distance in miles")
-        input(type="submit" value="get")
-    
-    if users
-        section.users
-            p london friends
-            ul
-                each user in users
-                    li(id='user-id-' + user.id)
-                        p #{user.first_name} #{user.last_name}, #{user.email}
+    .container
+        p.welcome-message Find users who are listed as either living in London or are living within the chosen number of miles from London
+        .form-container
+            form(id="login" action="/users/London" method="get")
+                fieldset
+                    legend
+                        h1 Search Users in London
+                    label(for="miles") Distance (miles)
+                    input(type="number" id="miles" name="miles")&attributes(errors ? {'class': 'error'} : {'class': ''})
+                    if(errors)
+                        span.error-message= errors
+                input(type="submit" value="Submit")
+        
+        if users
+            section.users
+                table
+                    caption #{users.length} users found within #{miles} miles of London
+                        tr
+                            th(scope="col") First Name
+                            th(scope="col") Last Name
+                            th(scope="col") Email
+                        each user in users
+                            tr
+                                td #{user.first_name}
+                                td #{user.last_name}
+                                td #{user.email}
